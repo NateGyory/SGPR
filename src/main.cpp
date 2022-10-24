@@ -16,9 +16,12 @@
 
 #include <nlohmann/json.hpp>
 
+#include <matplot/matplot.h>
+
 #include <armadillo>
 
 using namespace std::chrono_literals;
+using namespace matplot;
 using json = nlohmann::json;
 
 struct SpectralFeatures
@@ -32,6 +35,10 @@ struct SpectralFeatures
     std::unordered_map<std::string, pcl::PointCloud<pcl::PointXYZRGB>::Ptr> obj_cloud_map;
 };
 
+// TODO: After getting the histogram to work
+//      1) Try an figure out why eigenvalues are negative
+//      2) Try switching between radius and nearest neighbors
+//      3) Try fully connected
 void ComputeLaplacian(SpectralFeatures &sf)
 {
     for( auto const kv : sf.obj_cloud_map )
@@ -46,24 +53,27 @@ void ComputeLaplacian(SpectralFeatures &sf)
         int rows = kv.second->points.size();
         int cols = rows;
 
-        int K = 5;
+        double radius = 0.1f;
+        unsigned int max_nn = 25;
 
         arma::sp_mat laplacian(rows, cols);
 
         std::cout << "Laplacian size: " << rows << std::endl;
         for (int i = 0; i < rows; i++) {
-            kdTree.nearestKSearch(i, K, indicies_found, squaredDistances);
+            kdTree.radiusSearch(i, radius, indicies_found, squaredDistances, max_nn);
 
             int num_edges = indicies_found.size();
+            //std::cout << num_edges << std::endl;
             laplacian(i,i) = num_edges - 1;
 
             for (int j = 1; j < indicies_found.size(); j++)
             {
-                laplacian(i, indicies_found[j]) = -1 * sqrt(squaredDistances[j]);
-                laplacian(indicies_found[j], i) = -1 * sqrt(squaredDistances[j]);
+                laplacian(i, indicies_found[j]) = 1 * squaredDistances[j];
+                laplacian(indicies_found[j], i) = 1 * squaredDistances[j];
             }
         }
 
+        //std::cout << laplacian << std::endl;
         sf.laplacian_map[kv.first] = laplacian;
     }
 }
@@ -132,7 +142,7 @@ void PopulateSemanticEigenMap(SpectralFeatures &sf)
     pcl::fromPCLPointCloud2(*cloud2, *cloud);
 
     std::cout << sf.obj_details_map.size() << std::endl;
-    for ( auto const &kv : sf.obj_details_map)
+    for ( auto &kv : sf.obj_details_map)
     {
         std::cout << kv.second["label"] << std::endl;
         uint8_t r = (uint8_t) strtol(kv.first.substr(0,2).c_str(), nullptr, 16);
@@ -150,16 +160,35 @@ void PopulateSemanticEigenMap(SpectralFeatures &sf)
         condrem.filter(*cloud_filtered);
 
         // Compute Random Sample so that we have 300 pts for each object
+
         std::cout << "Original Obj size: " << cloud_filtered->points.size() << std::endl;
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr rand_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-        pcl::RandomSample <pcl::PointXYZRGB> random;
+        double leafInc = 0.01;
+        double leafValue = 0.01;
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud = cloud_filtered;
+        while (input_cloud->points.size() > 2000)
+        {
+            pcl::PointCloud<pcl::PointXYZRGB>::Ptr vox_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+            pcl::VoxelGrid<pcl::PointXYZRGB> sor;
+            sor.setInputCloud (input_cloud);
+            sor.setLeafSize (leafValue, leafValue, leafValue);
+            sor.filter (*vox_cloud);
 
-        random.setInputCloud(cloud_filtered);
-        random.setSeed (std::rand ());
-        random.setSample((unsigned int)(300));
-        random.filter(*rand_cloud);
+            input_cloud.reset();
+            input_cloud = vox_cloud;
+            leafValue += leafInc;
+            std::cout << "during vox loop: " << input_cloud->points.size() << std::endl;
+        }
 
-        sf.obj_cloud_map[kv.first] = rand_cloud;
+        std::cout << "The cloud which will be saved is of size: " << input_cloud->points.size() << std::endl;
+
+        //pcl::RandomSample <pcl::PointXYZRGB> random;
+
+        //random.setInputCloud(cloud_filtered);
+        //random.setSeed (std::rand ());
+        //random.setSample((unsigned int)(1000));
+        //random.filter(*rand_cloud);
+
+        sf.obj_cloud_map[kv.first] = input_cloud;
 
         //VisualizeCloud(rand_cloud);
     }
@@ -193,6 +222,7 @@ void DownSizeMatchClouds(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud, int size
     random.setSample(size);
     random.filter(*rand_cloud);
 
+    cloud.reset();
     cloud = rand_cloud;
 }
 
@@ -205,13 +235,41 @@ void NormalizeObjClouds(std::unordered_map<std::string, pcl::PointCloud<pcl::Poi
             int size = std::min(larger[kv.first]->points.size(), smaller[kv.first]->points.size());
             if (larger[kv.first]->points.size() > smaller[kv.first]->points.size())
                 DownSizeMatchClouds(larger[kv.first], size);
-            else if (larger[kv.first]->points.size() > smaller[kv.first]->points.size())
+            else if (larger[kv.first]->points.size() < smaller[kv.first]->points.size())
                 DownSizeMatchClouds(smaller[kv.first], size);
-            std::cout << "temp" << std::endl;
         }
     }
 }
 
+void VisualizeHistograms(SpectralFeatures &ref_sf, SpectralFeatures &query_sf)
+{
+
+    for ( auto kv : ref_sf.obj_details_map)
+    {
+        if (query_sf.eigval_map.find(kv.first) != query_sf.eigval_map.end())
+        {
+            std::cout << kv.second["label"] << std::endl;
+            std::vector<double> ref = arma::conv_to< std::vector<double> >::from(ref_sf.eigval_map[kv.first]);
+            std::vector<double> query = arma::conv_to< std::vector<double> >::from(query_sf.eigval_map[kv.first]);
+            std::string label = kv.second["label"].dump();
+            auto h1 = hist(ref);
+            hold(on);
+            auto h2 = hist(query);
+            h1->bin_width(1.0);
+            h2->bin_width(1.0);
+            title(label);
+
+            //subplot(1,2,1);
+            //hist(query);
+            //std::string title2 = "Query " + kv.second["label"].dump();
+            //title(title2);
+
+            show();
+            cla();
+        }
+    }
+
+}
 
 int main()
 {
@@ -238,10 +296,10 @@ int main()
 
     // Create new function which chooses random on larger cloud in order to get the clouds the same size
 
-    if ( ref_sf.obj_details_map.size() > query_sf.obj_details_map.size() )
-        NormalizeObjClouds(ref_sf.obj_cloud_map, query_sf.obj_cloud_map);
-    else
-        NormalizeObjClouds(query_sf.obj_cloud_map, ref_sf.obj_cloud_map);
+    //if ( ref_sf.obj_details_map.size() > query_sf.obj_details_map.size() )
+    //    NormalizeObjClouds(ref_sf.obj_cloud_map, query_sf.obj_cloud_map);
+    //else
+    //    NormalizeObjClouds(query_sf.obj_cloud_map, ref_sf.obj_cloud_map);
 
     ComputeLaplacian(ref_sf);
     ComputeLaplacian(query_sf);
@@ -249,26 +307,26 @@ int main()
     ComputeEigens(ref_sf);
     ComputeEigens(query_sf);
 
+    VisualizeHistograms(ref_sf, query_sf);
+
     //std::cout << "ref map size: " << ref_semantic_eigen_map.size() << std::endl;
     //std::cout << "query map size: " << query_semantic_eigen_map.size() << std::endl;
 
-    for ( auto const kv : ref_sf.eigval_map )
-    {
-        if (query_sf.eigval_map.find(kv.first) != query_sf.eigval_map.end())
-        {
-            std::cout << "color: " << kv.first << " Number of eigenvalues: " << kv.second.size() << std::endl;
-            std::cout << "color: " << kv.first << " Number of eigenvalues: " << query_sf.eigval_map[kv.first].size() << std::endl;
-            std::cout << "!!!!!!!!!!!!!!!" << std::endl;
-        }
-        else
-        {
-            std::cout << "ABSENT OBJECT" << std::endl;
-            std::cout << "Ref color: " << kv.first << " Number of eigenvalues: " << kv.second.size() << std::endl;
+    //for ( auto const kv : ref_sf.eigval_map )
+    //{
+    //    if (query_sf.eigval_map.find(kv.first) != query_sf.eigval_map.end())
+    //    {
+    //        for (int i = 0; i < query_sf.eigval_map.size() ; i++)
+    //        {
+    //            std::cout << ref_sf.eigval_map[kv.first][i] << " : " << query_sf.eigval_map[kv.first][i] << std::endl;
+    //        }
+    //        std::cout << "!!!!!!!!!!!!!!!" << std::endl;
+    //    }
+    //}
 
-        }
-    }
+    //std::cout << "SUCCESS" << std::endl;
 
-    std::cout << "SUCCESS" << std::endl;
+
 
     return 1;
 }
