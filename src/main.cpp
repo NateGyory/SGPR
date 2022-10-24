@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <sstream>
+#include <fstream>
 
 #include <pcl/io/ply_io.h>
 #include <pcl/conversions.h>
@@ -9,45 +10,131 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/filters/conditional_removal.h>
+#include <pcl/filters/random_sample.h>
 
 #include <boost/format.hpp>
+
+#include <nlohmann/json.hpp>
 
 #include <armadillo>
 
 using namespace std::chrono_literals;
+using json = nlohmann::json;
 
-std::unordered_map<std::string, std::vector<double>> semantic_eigen_map;
+struct SpectralFeatures
+{
+    std::string ply_file;
+    std::string scan_id;
+    std::unordered_map<std::string, json> obj_details_map;
+    std::unordered_map<std::string,arma::sp_mat> laplacian_map;
+    std::unordered_map<std::string,arma::vec> eigval_map;
+    std::unordered_map<std::string,arma::mat> eigvec_map;
+    std::unordered_map<std::string, pcl::PointCloud<pcl::PointXYZRGB>::Ptr> obj_cloud_map;
+};
+
+void ComputeLaplacian(SpectralFeatures &sf)
+{
+    for( auto const kv : sf.obj_cloud_map )
+    {
+        pcl::KdTreeFLANN<pcl::PointXYZRGB> kdTree;
+        kdTree.setInputCloud(kv.second);
+        pcl::PointXYZ searchPoint;
+
+        std::vector<int> indicies_found;
+        std::vector<float> squaredDistances;
+
+        int rows = kv.second->points.size();
+        int cols = rows;
+
+        int K = 5;
+
+        arma::sp_mat laplacian(rows, cols);
+
+        std::cout << "Laplacian size: " << rows << std::endl;
+        for (int i = 0; i < rows; i++) {
+            kdTree.nearestKSearch(i, K, indicies_found, squaredDistances);
+
+            int num_edges = indicies_found.size();
+            laplacian(i,i) = num_edges - 1;
+
+            for (int j = 1; j < indicies_found.size(); j++)
+            {
+                laplacian(i, indicies_found[j]) = -1 * sqrt(squaredDistances[j]);
+                laplacian(indicies_found[j], i) = -1 * sqrt(squaredDistances[j]);
+            }
+        }
+
+        sf.laplacian_map[kv.first] = laplacian;
+    }
+}
+
+void ComputeEigens(SpectralFeatures &sf)
+{
+    for( auto const kv : sf.laplacian_map)
+    {
+        arma::vec eigval;
+        arma::mat eigvec;
+
+        auto start = std::chrono::steady_clock::now();
+        arma::eigs_sym(eigval, eigvec, kv.second, kv.second.n_rows - 1);
+        arma::vec sorted_eig = arma::sort(eigval);
+        auto end = std::chrono::steady_clock::now();
+        cout << "Elapsed time in miliseconds: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+            << " ms" << endl;
+
+        sf.eigval_map[kv.first] = sorted_eig;
+        sf.eigvec_map[kv.first] = eigvec;
+    }
+}
+
+void ParseConfig(SpectralFeatures &sf)
+{
+    std::string objConfig = "/home/nate/Development/3RScan/data/3RScan/objects.json";
+    std::ifstream f(objConfig);
+    json data = json::parse(f);
+
+    std::vector<json> objects;
+    for (auto obj : data["scans"])
+    {
+        if( obj["scan"] == sf.scan_id )
+        {
+            objects = obj["objects"];
+            break;
+        }
+    }
+
+    // Fill map with the colors
+    for (auto const obj: objects)
+    {
+        std::string ply_color = obj["ply_color"];
+        ply_color.erase(0, 1);
+        sf.obj_details_map[ply_color] = obj;
+    }
+}
 
 void VisualizeCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud)
 {
     pcl::visualization::CloudViewer viewer("Cloud Viewer");
     viewer.showCloud(cloud);
-    do
-    {
-        std::cout << '\n' << "Press a key to continue...";
-    } while (std::cin.get() != '\n');
+    std::cout << '\n' << "Press Enter";
+    while (std::cin.get() != '\n') {}
 }
 
 
-void PopulateSemanticEigenMap(std::string plyFile)
+void PopulateSemanticEigenMap(SpectralFeatures &sf)
 {
     pcl::PCLPointCloud2::Ptr cloud2(new pcl::PCLPointCloud2 ());
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    pcl::io::loadPLYFile(plyFile, *cloud2);
+    pcl::io::loadPLYFile(sf.ply_file, *cloud2);
     pcl::fromPCLPointCloud2(*cloud2, *cloud);
 
-    for ( auto const &data : cloud->points )
+    std::cout << sf.obj_details_map.size() << std::endl;
+    for ( auto const &kv : sf.obj_details_map)
     {
-        std::stringstream ss;
-        ss << boost::format("%x%x%x") % unsigned(data.r) % unsigned(data.g) % unsigned(data.b);
-        std::string key = ss.str();
-        semantic_eigen_map[key] = std::vector<double>();
-    }
-
-    for ( auto const &kv : semantic_eigen_map )
-    {
+        std::cout << kv.second["label"] << std::endl;
         uint8_t r = (uint8_t) strtol(kv.first.substr(0,2).c_str(), nullptr, 16);
         uint8_t g = (uint8_t) strtol(kv.first.substr(2,2).c_str(), nullptr, 16);
         uint8_t b = (uint8_t) strtol(kv.first.substr(4,2).c_str(), nullptr, 16);
@@ -60,10 +147,21 @@ void PopulateSemanticEigenMap(std::string plyFile)
         pcl::ConditionalRemoval<pcl::PointXYZRGB> condrem;
         condrem.setCondition(range_cond);
         condrem.setInputCloud(cloud);
-        condrem.setKeepOrganized(true);
         condrem.filter(*cloud_filtered);
 
-        //VisualizeCloud(cloud_filtered);
+        // Compute Random Sample so that we have 300 pts for each object
+        std::cout << "Original Obj size: " << cloud_filtered->points.size() << std::endl;
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr rand_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+        pcl::RandomSample <pcl::PointXYZRGB> random;
+
+        random.setInputCloud(cloud_filtered);
+        random.setSeed (std::rand ());
+        random.setSample((unsigned int)(300));
+        random.filter(*rand_cloud);
+
+        sf.obj_cloud_map[kv.first] = rand_cloud;
+
+        //VisualizeCloud(rand_cloud);
     }
 
 
@@ -85,92 +183,92 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ParseAndFilter(std::string plyFile)
     return ret_cloud;
 }
 
-void ComputeLaplacian(arma::sp_mat &laplacian, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud)
+void DownSizeMatchClouds(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud, int size)
 {
-    pcl::KdTreeFLANN<pcl::PointXYZRGB> kdTree;
-    kdTree.setInputCloud(cloud);
-    pcl::PointXYZ searchPoint;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr rand_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::RandomSample <pcl::PointXYZRGB> random;
 
-    std::vector<int> indicies_found;
-    std::vector<float> radiusSquaredDistance;
-    int max_nn = 20;
+    random.setInputCloud(cloud);
+    random.setSeed (std::rand ());
+    random.setSample(size);
+    random.filter(*rand_cloud);
 
-    float radius = 1.2f;
+    cloud = rand_cloud;
+}
 
-    int rows = cloud->size();
-    int cols = rows;
-
-    laplacian.set_size(rows, cols);
-
-    std::cout << "Laplacian size: " << rows << std::endl;
-    for (int i = 0; i < rows; i++) {
-        kdTree.radiusSearch(i, radius, indicies_found, radiusSquaredDistance, max_nn);
-
-        // Populate the laplacian diaganol w/ edge count
-        int num_edges = indicies_found.size();
-        //std::cout << "Edges found: " << num_edges << std::endl;
-        laplacian(i,i) = num_edges - 1;
-
-        // Populate the adjacency Matrix with -1 where edge is found
-        for (int j = 1; j < indicies_found.size(); j++)
+void NormalizeObjClouds(std::unordered_map<std::string, pcl::PointCloud<pcl::PointXYZRGB>::Ptr> &larger, std::unordered_map<std::string, pcl::PointCloud<pcl::PointXYZRGB>::Ptr> &smaller)
+{
+    for ( auto kv : larger )
+    {
+        if (smaller.find(kv.first) != smaller.end())
         {
-            laplacian(i, indicies_found[j]) = -1 * sqrt(radiusSquaredDistance[j]);
-            // Since laplcian is symmetric populare the j, i as well
-            laplacian(indicies_found[j], i) = -1 * sqrt(radiusSquaredDistance[j]);
+            int size = std::min(larger[kv.first]->points.size(), smaller[kv.first]->points.size());
+            if (larger[kv.first]->points.size() > smaller[kv.first]->points.size())
+                DownSizeMatchClouds(larger[kv.first], size);
+            else if (larger[kv.first]->points.size() > smaller[kv.first]->points.size())
+                DownSizeMatchClouds(smaller[kv.first], size);
+            std::cout << "temp" << std::endl;
         }
     }
 }
 
-void ComputeEigens(arma::vec &eigval, arma::mat &eigvec, arma::sp_mat &laplacian, int size)
-{
-    auto start = std::chrono::steady_clock::now();
-    arma::eigs_sym(eigval, eigvec, laplacian, size - 1);
-    arma::vec sorted_eig = arma::sort(eigval);
-    auto end = std::chrono::steady_clock::now();
-    cout << "Elapsed time in miliseconds: "
-        << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-        << " ms" << endl;
-}
 
 int main()
 {
+    SpectralFeatures ref_sf;
+    SpectralFeatures query_sf;
+
     std::string ref_scan = "/home/nate/Development/3RScan/data/3RScan/4acaebcc-6c10-2a2a-858b-29c7e4fb410d/labels.instances.annotated.v2.ply";
     std::string query_scan = "/home/nate/Development/3RScan/data/3RScan/754e884c-ea24-2175-8b34-cead19d4198d/labels.instances.annotated.v2.ply";
 
-    //pcl::PointCloud<pcl::PointXYZRGB>::Ptr ref_cloud = ParseAndFilter(ref_scan);
-    //pcl::PointCloud<pcl::PointXYZRGB>::Ptr query_cloud = ParseAndFilter(query_scan);
+    std::string ref_scan_id = "4acaebcc-6c10-2a2a-858b-29c7e4fb410d";
+    std::string query_scan_id = "754e884c-ea24-2175-8b34-cead19d4198d";
 
-    // TODO
-    //  1) Filter point cloud to get each object
-    //      a) create map with color as key and array of eigenvalues for values
+    ref_sf.ply_file = ref_scan;
+    ref_sf.scan_id = ref_scan_id;
 
+    query_sf.ply_file = query_scan;
+    query_sf.scan_id = query_scan_id;
 
-    PopulateSemanticEigenMap(ref_scan);
+    ParseConfig(ref_sf);
+    ParseConfig(query_sf);
 
-    //VisualizeCloud(ref_cloud);
-    //VisualizeCloud(query_cloud);
+    PopulateSemanticEigenMap(ref_sf);
+    PopulateSemanticEigenMap(query_sf);
 
-    //arma::sp_mat ref_laplacian;
-    //arma::sp_mat query_laplacian;
+    // Create new function which chooses random on larger cloud in order to get the clouds the same size
 
-    //ComputeLaplacian(ref_laplacian, ref_cloud);
-    //ComputeLaplacian(query_laplacian, query_cloud);
+    if ( ref_sf.obj_details_map.size() > query_sf.obj_details_map.size() )
+        NormalizeObjClouds(ref_sf.obj_cloud_map, query_sf.obj_cloud_map);
+    else
+        NormalizeObjClouds(query_sf.obj_cloud_map, ref_sf.obj_cloud_map);
 
-    //arma::vec ref_eigval, query_eigval;
-    //arma::mat ref_eigvec, query_eigvec;
+    ComputeLaplacian(ref_sf);
+    ComputeLaplacian(query_sf);
 
-    //ComputeEigens(ref_eigval, ref_eigvec, ref_laplacian, ref_cloud->size());
-    //ComputeEigens(query_eigval, query_eigvec, query_laplacian, query_cloud->size());
+    ComputeEigens(ref_sf);
+    ComputeEigens(query_sf);
 
-    //int len = std::max(ref_eigval.size(), query_eigval.size());
+    //std::cout << "ref map size: " << ref_semantic_eigen_map.size() << std::endl;
+    //std::cout << "query map size: " << query_semantic_eigen_map.size() << std::endl;
 
-    //int diff = 0;
-    //for(int i = 0; i < len; i++)
-    //{
-    //    std::cout << "Ref: " << ref_eigval[i] << " Query: " << query_eigval[i] << std::endl;
-    //    diff += abs( ref_eigval[i] - query_eigval[i] );
-    //}
+    for ( auto const kv : ref_sf.eigval_map )
+    {
+        if (query_sf.eigval_map.find(kv.first) != query_sf.eigval_map.end())
+        {
+            std::cout << "color: " << kv.first << " Number of eigenvalues: " << kv.second.size() << std::endl;
+            std::cout << "color: " << kv.first << " Number of eigenvalues: " << query_sf.eigval_map[kv.first].size() << std::endl;
+            std::cout << "!!!!!!!!!!!!!!!" << std::endl;
+        }
+        else
+        {
+            std::cout << "ABSENT OBJECT" << std::endl;
+            std::cout << "Ref color: " << kv.first << " Number of eigenvalues: " << kv.second.size() << std::endl;
 
+        }
+    }
+
+    std::cout << "SUCCESS" << std::endl;
 
     return 1;
 }
