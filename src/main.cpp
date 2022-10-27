@@ -24,7 +24,18 @@ using namespace std::chrono_literals;
 using namespace matplot;
 using json = nlohmann::json;
 
-struct SpectralFeatures
+struct SpectralFeaturesDense
+{
+    std::string ply_file;
+    std::string scan_id;
+    std::unordered_map<std::string, json> obj_details_map;
+    std::unordered_map<std::string,arma::mat> laplacian_map;
+    std::unordered_map<std::string,arma::vec> eigval_map;
+    std::unordered_map<std::string,arma::mat> eigvec_map;
+    std::unordered_map<std::string, pcl::PointCloud<pcl::PointXYZRGB>::Ptr> obj_cloud_map;
+};
+
+struct SpectralFeaturesSparse
 {
     std::string ply_file;
     std::string scan_id;
@@ -35,11 +46,35 @@ struct SpectralFeatures
     std::unordered_map<std::string, pcl::PointCloud<pcl::PointXYZRGB>::Ptr> obj_cloud_map;
 };
 
-// TODO: After getting the histogram to work
-//      1) Try an figure out why eigenvalues are negative
-//      2) Try switching between radius and nearest neighbors
-//      3) Try fully connected
-void ComputeLaplacian(SpectralFeatures &sf)
+// NOTE: for gdb debugging
+std::string make_string(const char *x)
+{
+        return x;
+}
+
+template<class Matrix>
+void print_matrix(Matrix matrix) {
+    matrix.print(std::cout);
+}
+
+template void print_matrix<arma::mat>(arma::mat matrix);
+
+double GetSmallestDistance(pcl::KdTreeFLANN<pcl::PointXYZRGB> &kdTree, int size)
+{
+    double min = 1000000.0;
+    for ( int i = 0; i < size; i++ )
+    {
+        std::vector<int> indicies_found;
+        std::vector<float> squaredDistances;
+        kdTree.nearestKSearch(i, 2, indicies_found, squaredDistances);
+        min = ( squaredDistances[1] < min ) ? sqrt(squaredDistances[1]) : min;
+    }
+
+    return min;
+}
+
+template<class T>
+void ComputeLaplacianFC(T &sf)
 {
     for( auto const kv : sf.obj_cloud_map )
     {
@@ -47,29 +82,82 @@ void ComputeLaplacian(SpectralFeatures &sf)
         kdTree.setInputCloud(kv.second);
         pcl::PointXYZ searchPoint;
 
-        std::vector<int> indicies_found;
-        std::vector<float> squaredDistances;
+
+        int rows = kv.second->points.size();
+        int cols = rows;
+
+        double radius = 1000;
+        unsigned int max_nn = rows + 1;
+
+        double smallestDistance = GetSmallestDistance(kdTree, rows);
+        double bias = 1.0 - smallestDistance;
+
+        arma::mat laplacian(rows, cols);
+
+        std::cout << "Laplacian size: " << rows << std::endl;
+        for (int i = 0; i < rows; i++) {
+            std::vector<int> indicies_found;
+            std::vector<float> squaredDistances;
+            kdTree.radiusSearch(i, radius, indicies_found, squaredDistances, max_nn);
+
+            int num_edges = indicies_found.size() - 1;
+            if (num_edges != rows - 1)
+                std::cout << "Did not get all points!" << std::endl;
+            //std::cout << num_edges << std::endl;
+            laplacian(i,i) = num_edges;
+
+            for (int j = 1; j < indicies_found.size(); j++)
+            {
+                laplacian(i, indicies_found[j]) = (-1 / (sqrt(squaredDistances[j]) + bias));
+                laplacian(indicies_found[j], i) = -1 / (sqrt(squaredDistances[j]) + bias);
+                //laplacian(i, indicies_found[j]) = -1;
+                //laplacian(indicies_found[j], i) = -1;
+            }
+        }
+
+        //std::cout << laplacian << std::endl;
+        arma::rowvec A = max(laplacian,0);
+        for ( auto & val : A ) if ( val == A.size() - 1 ) val = 0;
+        std::cout << "max row: " << max(A) << std::endl;
+        std::cout << "min row: " << min(A) << std::endl;
+        sf.laplacian_map[kv.first] = laplacian;
+    }
+}
+
+void ComputeLaplacian(SpectralFeaturesSparse &sf)
+{
+    for( auto const kv : sf.obj_cloud_map )
+    {
+        pcl::KdTreeFLANN<pcl::PointXYZRGB> kdTree;
+        kdTree.setInputCloud(kv.second);
+        pcl::PointXYZ searchPoint;
 
         int rows = kv.second->points.size();
         int cols = rows;
 
         double radius = 0.1f;
-        unsigned int max_nn = 25;
+        unsigned int max_nn = 200;
+        //int neighbors = 6;
+        double smallestDistance = GetSmallestDistance(kdTree, rows);
+        double bias = 1.0 - smallestDistance;
 
         arma::sp_mat laplacian(rows, cols);
 
         std::cout << "Laplacian size: " << rows << std::endl;
         for (int i = 0; i < rows; i++) {
+            std::vector<int> indicies_found;
+            std::vector<float> squaredDistances;
             kdTree.radiusSearch(i, radius, indicies_found, squaredDistances, max_nn);
+            //kdTree.nearestKSearch(i, neighbors, indicies_found, squaredDistances);
 
-            int num_edges = indicies_found.size();
-            //std::cout << num_edges << std::endl;
-            laplacian(i,i) = num_edges - 1;
+            int num_edges = indicies_found.size() - 1;
+            std::cout << num_edges << std::endl;
+            laplacian(i,i) = num_edges;
 
             for (int j = 1; j < indicies_found.size(); j++)
             {
-                laplacian(i, indicies_found[j]) = 1 * squaredDistances[j];
-                laplacian(indicies_found[j], i) = 1 * squaredDistances[j];
+                laplacian(i, indicies_found[j]) = -1 / (sqrt(squaredDistances[j]) + bias);
+                laplacian(indicies_found[j], i) = -1 / (sqrt(squaredDistances[j]) + bias);
             }
         }
 
@@ -78,7 +166,54 @@ void ComputeLaplacian(SpectralFeatures &sf)
     }
 }
 
-void ComputeEigens(SpectralFeatures &sf)
+void ComputeLaplacianKnn(SpectralFeaturesSparse &sf)
+{
+    for( auto const kv : sf.obj_cloud_map )
+    {
+        pcl::KdTreeFLANN<pcl::PointXYZRGB> kdTree;
+        kdTree.setInputCloud(kv.second);
+        pcl::PointXYZ searchPoint;
+
+
+        int rows = kv.second->points.size();
+        int cols = rows;
+
+        double neighbors = 6;
+
+        double smallestDistance = GetSmallestDistance(kdTree, rows);
+        double bias = 1.0 - smallestDistance;
+
+        arma::sp_mat laplacian(rows, cols);
+
+        std::cout << "Laplacian size: " << rows << std::endl;
+        for (int i = 0; i < rows; i++) {
+            std::vector<int> indicies_found;
+            std::vector<float> squaredDistances;
+            kdTree.nearestKSearch(kv.second->points[i], neighbors, indicies_found, squaredDistances);
+
+            int num_edges = indicies_found.size() - 1;
+            if (num_edges != neighbors - 1)
+                std::cout << "Did not get the correct number of neighbors" << std::endl;
+            //std::cout << num_edges << std::endl;
+            laplacian(i,i) = num_edges;
+
+            for (int j = 1; j < indicies_found.size(); j++)
+            {
+                laplacian(i, indicies_found[j]) = (-1 / (sqrt(squaredDistances[j]) + bias));
+                laplacian(indicies_found[j], i) = -1 / (sqrt(squaredDistances[j]) + bias);
+                //laplacian(i, indicies_found[j]) = -1;
+                //laplacian(indicies_found[j], i) = -1;
+            }
+        }
+
+        //std::cout << laplacian << std::endl;
+       // arma::rowvec A = max(laplacian,0);
+       // for ( auto & val : A ) if ( val == A.size() - 1 ) val = 0;
+       // std::cout << "max row: " << max(A) << std::endl;
+       // std::cout << "min row: " << min(A) << std::endl;
+        sf.laplacian_map[kv.first] = laplacian; } }
+
+void ComputeEigensDense(SpectralFeaturesDense &sf)
 {
     for( auto const kv : sf.laplacian_map)
     {
@@ -86,19 +221,60 @@ void ComputeEigens(SpectralFeatures &sf)
         arma::mat eigvec;
 
         auto start = std::chrono::steady_clock::now();
-        arma::eigs_sym(eigval, eigvec, kv.second, kv.second.n_rows - 1);
-        arma::vec sorted_eig = arma::sort(eigval);
+        arma::eig_sym(eigval, eigvec, kv.second);
+        //arma::vec sorted_eig = arma::sort(eigval);
         auto end = std::chrono::steady_clock::now();
         cout << "Elapsed time in miliseconds: "
             << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
             << " ms" << endl;
 
-        sf.eigval_map[kv.first] = sorted_eig;
+        sf.eigval_map[kv.first] = eigval;
         sf.eigvec_map[kv.first] = eigvec;
     }
 }
 
-void ParseConfig(SpectralFeatures &sf)
+void ComputeEigensSparse(SpectralFeaturesSparse &sf)
+{
+    for( auto const kv : sf.laplacian_map)
+    {
+        arma::vec eigval;
+        arma::mat eigvec;
+
+        auto start = std::chrono::steady_clock::now();
+        arma::eigs_sym(eigval, eigvec, kv.second, kv.second.n_cols - 1);
+        auto end = std::chrono::steady_clock::now();
+        cout << "Elapsed time in miliseconds: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+            << " ms" << endl;
+
+        sf.eigval_map[kv.first] = eigval;
+        sf.eigvec_map[kv.first] = eigvec;
+    }
+}
+
+template<class T>
+void ComputeEigensSparse(T &sf)
+{
+    for( auto const kv : sf.laplacian_map)
+    {
+        arma::vec eigval;
+        arma::mat eigvec;
+
+        auto start = std::chrono::steady_clock::now();
+        arma::eigs_sym(eigval, eigvec, kv.second);
+        //arma::vec sorted_eig = arma::sort(eigval);
+        auto end = std::chrono::steady_clock::now();
+        cout << "Elapsed time in miliseconds: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+            << " ms" << endl;
+
+        sf.eigval_map[kv.first] = eigval;
+        sf.eigvec_map[kv.first] = eigvec;
+    }
+}
+
+template<class T>
+void ParseConfig(T &sf)
 {
     std::string objConfig = "/home/nate/Development/3RScan/data/3RScan/objects.json";
     std::ifstream f(objConfig);
@@ -132,11 +308,12 @@ void VisualizeCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud)
 }
 
 
-void PopulateSemanticEigenMap(SpectralFeatures &sf)
+template<class T>
+void PopulateSemanticEigenMap(T &sf)
 {
     pcl::PCLPointCloud2::Ptr cloud2(new pcl::PCLPointCloud2 ());
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered;
 
     pcl::io::loadPLYFile(sf.ply_file, *cloud2);
     pcl::fromPCLPointCloud2(*cloud2, *cloud);
@@ -144,6 +321,7 @@ void PopulateSemanticEigenMap(SpectralFeatures &sf)
     std::cout << sf.obj_details_map.size() << std::endl;
     for ( auto &kv : sf.obj_details_map)
     {
+        cloud_filtered = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
         std::cout << kv.second["label"] << std::endl;
         uint8_t r = (uint8_t) strtol(kv.first.substr(0,2).c_str(), nullptr, 16);
         uint8_t g = (uint8_t) strtol(kv.first.substr(2,2).c_str(), nullptr, 16);
@@ -164,22 +342,20 @@ void PopulateSemanticEigenMap(SpectralFeatures &sf)
         std::cout << "Original Obj size: " << cloud_filtered->points.size() << std::endl;
         double leafInc = 0.01;
         double leafValue = 0.01;
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud = cloud_filtered;
-        while (input_cloud->points.size() > 2000)
+        //pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud = cloud_filtered;
+        while (cloud_filtered->points.size() > 1000)
         {
             pcl::PointCloud<pcl::PointXYZRGB>::Ptr vox_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
             pcl::VoxelGrid<pcl::PointXYZRGB> sor;
-            sor.setInputCloud (input_cloud);
+            sor.setInputCloud (cloud_filtered);
             sor.setLeafSize (leafValue, leafValue, leafValue);
             sor.filter (*vox_cloud);
 
-            input_cloud.reset();
-            input_cloud = vox_cloud;
+            cloud_filtered = vox_cloud;
             leafValue += leafInc;
-            std::cout << "during vox loop: " << input_cloud->points.size() << std::endl;
         }
 
-        std::cout << "The cloud which will be saved is of size: " << input_cloud->points.size() << std::endl;
+        std::cout << "The cloud which will be saved is of size: " << cloud_filtered->points.size() << std::endl;
 
         //pcl::RandomSample <pcl::PointXYZRGB> random;
 
@@ -188,7 +364,8 @@ void PopulateSemanticEigenMap(SpectralFeatures &sf)
         //random.setSample((unsigned int)(1000));
         //random.filter(*rand_cloud);
 
-        sf.obj_cloud_map[kv.first] = input_cloud;
+        sf.obj_cloud_map[kv.first] = cloud_filtered;
+        cloud_filtered.reset();
 
         //VisualizeCloud(rand_cloud);
     }
@@ -241,40 +418,151 @@ void NormalizeObjClouds(std::unordered_map<std::string, pcl::PointCloud<pcl::Poi
     }
 }
 
-void VisualizeHistograms(SpectralFeatures &ref_sf, SpectralFeatures &query_sf)
+// TODO I would like to find a way to get the same number of eigenvalues
+// Figure out a removal algorithm to remove points based on binning
+template<class T>
+void VisualizeHistograms(T &ref_sf, T &query_sf)
 {
 
+    auto f = figure(true);
+    f->width(f->width() * 3);
+    f->height(f->height() * 2.5);
+    f->x_position(10);
+    f->y_position(10);
+    int row_idx = 0, col_idx = 0;
     for ( auto kv : ref_sf.obj_details_map)
     {
         if (query_sf.eigval_map.find(kv.first) != query_sf.eigval_map.end())
         {
             std::cout << kv.second["label"] << std::endl;
+            std::cout << row_idx << " : " << col_idx << std::endl;
             std::vector<double> ref = arma::conv_to< std::vector<double> >::from(ref_sf.eigval_map[kv.first]);
             std::vector<double> query = arma::conv_to< std::vector<double> >::from(query_sf.eigval_map[kv.first]);
+
+            //std::vector<double> ref_filtered;
+            //std::vector<double> query_filtered;
+
+            //auto filter_outliers = [](double i) {
+            //    return (i > 0.5);
+            //};
+
+            //std::copy_if(ref.begin(), ref.end(), std::back_inserter(ref_filtered), filter_outliers);
+            //std::copy_if(query.begin(), query.end(), std::back_inserter(query_filtered), filter_outliers);
+
+            // Get min and max value in both vectors
+            double min_ref = *std::min_element(ref.begin(), ref.end());
+            double max_ref = *std::max_element(ref.begin(), ref.end());
+            double min_query = *std::min_element(query.begin(), query.end());
+            double max_query = *std::max_element(query.begin(), query.end());
+
+            double min = std::min(min_ref, min_query);
+            double max = std::max(max_ref, max_query);
+
+            double bin_width = (max - min) / 25;
+
             std::string label = kv.second["label"].dump();
+            subplot(6,6,row_idx * 6 + col_idx);
             auto h1 = hist(ref);
+            h1->face_color("r");
+            h1->edge_color("r");
             hold(on);
             auto h2 = hist(query);
-            h1->bin_width(1.0);
-            h2->bin_width(1.0);
+            h2->face_color("b");
+            h2->edge_color("b");
+            h1->bin_width(bin_width);
+            h2->bin_width(bin_width);
             title(label);
+            f->draw();
+
+            // Visualize the cloud
+            //VisualizeCloud(ref_sf.obj_cloud_map[kv.first]);
+            //VisualizeCloud(query_sf.obj_cloud_map[kv.first]);
+
+            //show();
+            //cla();
 
             //subplot(1,2,1);
             //hist(query);
             //std::string title2 = "Query " + kv.second["label"].dump();
             //title(title2);
 
-            show();
-            cla();
+            if (col_idx == 5)
+            {
+                row_idx++;
+                col_idx = 0;
+            }
+            else
+                col_idx++;
+
         }
     }
+    show();
+    cla();
+}
+
+void FullyConnected(SpectralFeaturesDense &ref, SpectralFeaturesDense &query)
+{
+    ComputeLaplacianFC(ref);
+    ComputeLaplacianFC(query);
+
+    ComputeEigensDense(ref);
+    ComputeEigensDense(query);
+
+    VisualizeHistograms(ref, query);
+}
+
+void is_sym(SpectralFeaturesSparse &ref)
+{
+    for ( auto const &val : ref.laplacian_map )
+    {
+        for ( int i = 0; i < val.second.n_rows; i++ )
+        {
+            for ( int j = 0; j < val.second.n_cols; j++ )
+            {
+                if ( val.second(i, j) != val.second(j, i))
+                {
+                    std::cout << "NO MATCH" << std::endl;
+                    std::cout << "i is: " << i << std::endl;
+                    std::cout << "j  is: " << j << std::endl;
+                    std::cout << "lap(i, j)  is: " << val.second(i,j) << std::endl;
+                    std::cout << "lap(j, i)  is: " << val.second(j,i) << std::endl;
+                }
+            }
+        }
+    }
+}
+
+void NearestNeighbor(SpectralFeaturesSparse &ref, SpectralFeaturesSparse &query)
+{
+    //ComputeLaplacianKnn(ref);
+    //ComputeLaplacianKnn(query);
+    ComputeLaplacian(ref);
+    ComputeLaplacian(query);
+
+    is_sym(ref);
+
+    ComputeEigensSparse(ref);
+    ComputeEigensSparse(query);
+
+    VisualizeHistograms(ref, query);
+}
+
+void StaticRadius()
+{
+
+}
+
+void AdaptiveRadius()
+{
 
 }
 
 int main()
 {
-    SpectralFeatures ref_sf;
-    SpectralFeatures query_sf;
+    //SpectralFeaturesDense ref_sf;
+    //SpectralFeaturesDense query_sf;
+    SpectralFeaturesSparse ref_sf;
+    SpectralFeaturesSparse query_sf;
 
     std::string ref_scan = "/home/nate/Development/3RScan/data/3RScan/4acaebcc-6c10-2a2a-858b-29c7e4fb410d/labels.instances.annotated.v2.ply";
     std::string query_scan = "/home/nate/Development/3RScan/data/3RScan/754e884c-ea24-2175-8b34-cead19d4198d/labels.instances.annotated.v2.ply";
@@ -294,39 +582,13 @@ int main()
     PopulateSemanticEigenMap(ref_sf);
     PopulateSemanticEigenMap(query_sf);
 
-    // Create new function which chooses random on larger cloud in order to get the clouds the same size
+    // TODO
+    // nearest neightbor laplacian
+    // adaptive threshold laplacian
+    // Probability transition laplacian
 
-    //if ( ref_sf.obj_details_map.size() > query_sf.obj_details_map.size() )
-    //    NormalizeObjClouds(ref_sf.obj_cloud_map, query_sf.obj_cloud_map);
-    //else
-    //    NormalizeObjClouds(query_sf.obj_cloud_map, ref_sf.obj_cloud_map);
-
-    ComputeLaplacian(ref_sf);
-    ComputeLaplacian(query_sf);
-
-    ComputeEigens(ref_sf);
-    ComputeEigens(query_sf);
-
-    VisualizeHistograms(ref_sf, query_sf);
-
-    //std::cout << "ref map size: " << ref_semantic_eigen_map.size() << std::endl;
-    //std::cout << "query map size: " << query_semantic_eigen_map.size() << std::endl;
-
-    //for ( auto const kv : ref_sf.eigval_map )
-    //{
-    //    if (query_sf.eigval_map.find(kv.first) != query_sf.eigval_map.end())
-    //    {
-    //        for (int i = 0; i < query_sf.eigval_map.size() ; i++)
-    //        {
-    //            std::cout << ref_sf.eigval_map[kv.first][i] << " : " << query_sf.eigval_map[kv.first][i] << std::endl;
-    //        }
-    //        std::cout << "!!!!!!!!!!!!!!!" << std::endl;
-    //    }
-    //}
-
-    //std::cout << "SUCCESS" << std::endl;
-
-
+    //FullyConnected(ref_sf, query_sf);
+    NearestNeighbor(ref_sf, query_sf);
 
     return 1;
 }
