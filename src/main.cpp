@@ -3,6 +3,8 @@
 #include <chrono>
 #include <sstream>
 #include <fstream>
+#include <random>
+#include <cmath>
 
 #include <pcl/io/ply_io.h>
 #include <pcl/conversions.h>
@@ -124,45 +126,80 @@ void ComputeLaplacianFC(T &sf)
     }
 }
 
-void ComputeLaplacian(SpectralFeaturesSparse &sf)
+double FindMinRadius(pcl::KdTreeFLANN<pcl::PointXYZRGB> &kdTree, int size)
 {
-    for( auto const kv : sf.obj_cloud_map )
-    {
-        pcl::KdTreeFLANN<pcl::PointXYZRGB> kdTree;
-        kdTree.setInputCloud(kv.second);
-        pcl::PointXYZ searchPoint;
+    double radius = 0.1f;
+    for (int i = 0; i < size; i++) {
+        std::vector<int> indicies_found;
+        std::vector<float> squaredDistances;
+        kdTree.radiusSearch(i, radius, indicies_found, squaredDistances, 100);
 
-        int rows = kv.second->points.size();
-        int cols = rows;
-
-        double radius = 0.1f;
-        unsigned int max_nn = 200;
-        //int neighbors = 6;
-        double smallestDistance = GetSmallestDistance(kdTree, rows);
-        double bias = 1.0 - smallestDistance;
-
-        arma::sp_mat laplacian(rows, cols);
-
-        std::cout << "Laplacian size: " << rows << std::endl;
-        for (int i = 0; i < rows; i++) {
-            std::vector<int> indicies_found;
-            std::vector<float> squaredDistances;
-            kdTree.radiusSearch(i, radius, indicies_found, squaredDistances, max_nn);
-            //kdTree.nearestKSearch(i, neighbors, indicies_found, squaredDistances);
-
-            int num_edges = indicies_found.size() - 1;
-            std::cout << num_edges << std::endl;
-            laplacian(i,i) = num_edges;
-
-            for (int j = 1; j < indicies_found.size(); j++)
-            {
-                laplacian(i, indicies_found[j]) = -1 / (sqrt(squaredDistances[j]) + bias);
-                laplacian(indicies_found[j], i) = -1 / (sqrt(squaredDistances[j]) + bias);
-            }
+        int num_edges = indicies_found.size() - 1;
+        // If the minimum edges end up equaling 1 then it is a disconnected graph.
+        // reset the laplacian, reset the counter and increase the radius until we
+        // have a fully connected graph
+        if (num_edges == 0)
+        {
+            std::cout << "Increasing radius" << std::endl;
+            i = 0;
+            radius += 0.1f;
         }
+    }
 
-        //std::cout << laplacian << std::endl;
-        sf.laplacian_map[kv.first] = laplacian;
+    return radius;
+}
+
+void PopulateLaplacian(pcl::KdTreeFLANN<pcl::PointXYZRGB> &kdTree, arma::sp_mat &laplacian, int size, double radius)
+{
+     double smallestDistance = GetSmallestDistance(kdTree, size);
+     double bias = 1.0 - smallestDistance;
+
+    // TODO change max_nn to max points in the cloud to test later
+    unsigned int max_nn = 1000;
+
+    std::cout << "Laplacian size: " << size << std::endl;
+    for (int i = 0; i < size; i++) {
+        std::vector<int> indicies_found;
+        std::vector<float> squaredDistances;
+        kdTree.radiusSearch(i, radius, indicies_found, squaredDistances, max_nn);
+
+        int num_edges = indicies_found.size() - 1;
+        laplacian(i,i) = num_edges;
+
+        for (int j = 1; j < indicies_found.size(); j++)
+        {
+            laplacian(i, indicies_found[j]) = -1 / (sqrt(squaredDistances[j]) + bias);
+            laplacian(indicies_found[j], i) = -1 / (sqrt(squaredDistances[j]) + bias);
+        }
+    }
+}
+
+void ComputeLaplacian(SpectralFeaturesSparse &ref_sf, SpectralFeaturesSparse &query_sf)
+{
+    for( auto const kv : ref_sf.obj_details_map)
+    {
+        if (query_sf.obj_cloud_map.find(kv.first) != query_sf.obj_cloud_map.end())
+        {
+            pcl::KdTreeFLANN<pcl::PointXYZRGB> ref_kdTree;
+            pcl::KdTreeFLANN<pcl::PointXYZRGB> query_kdTree;
+            ref_kdTree.setInputCloud(ref_sf.obj_cloud_map[kv.first]);
+            query_kdTree.setInputCloud(query_sf.obj_cloud_map[kv.first]);
+
+            int ref_rows = ref_sf.obj_cloud_map[kv.first]->points.size();
+            int query_rows = query_sf.obj_cloud_map[kv.first]->points.size();
+
+
+            double radius = std::max(FindMinRadius(ref_kdTree, ref_rows), FindMinRadius(query_kdTree, query_rows));
+
+            arma::sp_mat ref_laplacian(ref_rows, ref_rows);
+            arma::sp_mat query_laplacian(query_rows, query_rows);
+
+            PopulateLaplacian(ref_kdTree, ref_laplacian, ref_rows, radius);
+            PopulateLaplacian(query_kdTree, query_laplacian, query_rows, radius);
+
+            ref_sf.laplacian_map[kv.first] = ref_laplacian;
+            query_sf.laplacian_map[kv.first] = query_laplacian;
+        }
     }
 }
 
@@ -211,7 +248,9 @@ void ComputeLaplacianKnn(SpectralFeaturesSparse &sf)
        // for ( auto & val : A ) if ( val == A.size() - 1 ) val = 0;
        // std::cout << "max row: " << max(A) << std::endl;
        // std::cout << "min row: " << min(A) << std::endl;
-        sf.laplacian_map[kv.first] = laplacian; } }
+        sf.laplacian_map[kv.first] = laplacian;
+    }
+}
 
 void ComputeEigensDense(SpectralFeaturesDense &sf)
 {
@@ -439,6 +478,14 @@ void VisualizeHistograms(T &ref_sf, T &query_sf)
             std::vector<double> ref = arma::conv_to< std::vector<double> >::from(ref_sf.eigval_map[kv.first]);
             std::vector<double> query = arma::conv_to< std::vector<double> >::from(query_sf.eigval_map[kv.first]);
 
+
+            int r_size = ref.size();
+            int q_size = query.size();
+            std::cout << "ref size: " << r_size << std::endl;
+            std::cout << "query size: " << q_size << std::endl;
+            if(ref.size() != query.size())
+                std::cout << "DOES NOT EQUAL" << std::endl;
+
             //std::vector<double> ref_filtered;
             //std::vector<double> query_filtered;
 
@@ -532,29 +579,110 @@ void is_sym(SpectralFeaturesSparse &ref)
     }
 }
 
+void PruneEigenvalues(SpectralFeaturesSparse &ref_sf, SpectralFeaturesSparse &query_sf)
+{
+    for( auto const kv : ref_sf.obj_details_map)
+    {
+        std::string key = kv.first;
+        if (query_sf.eigval_map.find(key) != query_sf.eigval_map.end())
+        {
+            // First find the min sized laplacian
+            int ref_size = ref_sf.eigval_map[key].n_rows;
+            int query_size = query_sf.eigval_map[key].n_rows;
+
+            // If laplacians are the same size, no pruning necessary
+            if (ref_size == query_size) continue;
+
+            arma::vec eigvals;
+            bool ref_flag = false;
+            bool query_flag = false;
+            if (ref_size > query_size)
+            {
+                eigvals = ref_sf.eigval_map[key];
+                ref_flag = true;
+            }
+            else
+            {
+                eigvals = query_sf.eigval_map[key];
+                query_flag = true;
+            }
+
+            std::vector<double> eigs = arma::conv_to< std::vector<double> >::from(eigvals);
+
+            std::mt19937 generator(std::random_device{}());
+
+            int diff = abs(ref_size - query_size);
+            for (int i = 0; i < diff; i++)
+            {
+                std::uniform_int_distribution<int> distribution(0, eigs.size() - 1);
+                int rand_idx = distribution(generator);
+                eigs.erase(eigs.begin() + rand_idx);
+            }
+
+
+            if (ref_flag)
+            {
+                ref_sf.eigval_map[key].reset();
+                ref_sf.eigval_map[key] = arma::vec(eigs);
+            }
+            else
+            {
+                query_sf.eigval_map[key].reset();
+                query_sf.eigval_map[key] = arma::vec(eigs);
+            }
+        }
+    }
+}
+
+
+void MSE(SpectralFeaturesSparse &ref_sf, SpectralFeaturesSparse &query_sf)
+{
+    for( auto const kv : ref_sf.obj_details_map)
+    {
+        std::string key = kv.first;
+        if (query_sf.eigval_map.find(key) != query_sf.eigval_map.end())
+        {
+
+            auto squareError = [](double a, double b) {
+                double e = a-b;
+                return e*e;
+            };
+
+            double sumSquared = 0;
+            int size = ref_sf.eigval_map[key].size();
+            for (int i = 0; i < size; i++)
+            {
+                sumSquared += squareError(ref_sf.eigval_map[key][i], query_sf.eigval_map[key][i]);
+            }
+
+            double mse = sumSquared / size;
+            std::cout << "MSE for: " << kv.second["label"] << " = " << mse << std::endl;
+        }
+    }
+}
+
+void RMSE(SpectralFeaturesSparse &ref_sf, SpectralFeaturesSparse &query_sf)
+{
+
+}
+
 void NearestNeighbor(SpectralFeaturesSparse &ref, SpectralFeaturesSparse &query)
 {
     //ComputeLaplacianKnn(ref);
     //ComputeLaplacianKnn(query);
-    ComputeLaplacian(ref);
-    ComputeLaplacian(query);
+    ComputeLaplacian(ref, query);
 
     is_sym(ref);
 
     ComputeEigensSparse(ref);
     ComputeEigensSparse(query);
 
+    PruneEigenvalues(ref, query);
+
+    MSE(ref, query);
+    //RMSE(ref, query);
+
     VisualizeHistograms(ref, query);
-}
-
-void StaticRadius()
-{
-
-}
-
-void AdaptiveRadius()
-{
-
 }
 
 int main()
