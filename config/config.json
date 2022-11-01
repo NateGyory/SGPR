@@ -1,0 +1,13 @@
+{
+    "dataset_dir": "/home/nate/Datasets/3RScan",
+    "all_scenes": false,
+    "reference_scans": [
+        {
+            "scan_id": "4acaebcc-6c10-2a2a-858b-29c7e4fb410d"
+        },
+        {
+            "scan_id": "fcf66daa-622d-291c-8548-a1163ee299b4"
+        }
+    ],
+    "ply_filename": "labels.instances.annotated.v2.ply"
+}

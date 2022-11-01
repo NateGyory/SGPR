@@ -41,6 +41,7 @@ struct SpectralFeaturesSparse
 {
     std::string ply_file;
     std::string scan_id;
+    std::string referece_id; // Only populared by SF's in the query scan map
     std::unordered_map<std::string, json> obj_details_map;
     std::unordered_map<std::string,arma::sp_mat> laplacian_map;
     std::unordered_map<std::string,arma::vec> eigval_map;
@@ -312,29 +313,86 @@ void ComputeEigensSparse(T &sf)
     }
 }
 
-template<class T>
-void ParseConfig(T &sf)
+//template<class T>
+//void ParseConfig(T &sf)
+void ParseConfig(std::unordered_map<std::string, SpectralFeaturesSparse> &reference_map, std::unordered_map<std::string, SpectralFeaturesSparse> &query_map)
 {
-    std::string objConfig = "/home/nate/Development/3RScan/data/3RScan/objects.json";
-    std::ifstream f(objConfig);
-    json data = json::parse(f);
+    std::string config = "/home/nate/Development/SGPR/config/config.json";
+    std::string objConfig = "/home/nate/Development/SGPR/config/objects.json";
+    std::string refQueryMapConfig = "/home/nate/Development/SGPR/config/3RScan.json";
 
-    std::vector<json> objects;
-    for (auto obj : data["scans"])
+    std::ifstream configFile(config);
+    std::ifstream objectFile(objConfig);
+    std::ifstream refQueryMapFile(refQueryMapConfig);
+
+    json configData = json::parse(configFile);
+    json objectData = json::parse(objectFile);
+    json refQueryMapData = json::parse(refQueryMapFile);
+
+    std::string dataset_dir = configData["dataset_dir"].get<std::string>();
+    std::string ply_file = configData["ply_filename"].get<std::string>();
+    for (auto const &reference_scan: configData["reference_scans"])
     {
-        if( obj["scan"] == sf.scan_id )
+        SpectralFeaturesSparse sf;
+        sf.scan_id = reference_scan["scan_id"].get<std::string>();
+        sf.ply_file = dataset_dir + "/" + sf.scan_id + "/" + ply_file;
+
+        // Get all the objects associated with the scan
+        std::vector<json> objects;
+        for (auto obj : objectData["scans"])
         {
-            objects = obj["objects"];
-            break;
+            if( obj["scan"] == sf.scan_id )
+            {
+                objects = obj["objects"];
+                break;
+            }
         }
-    }
 
-    // Fill map with the colors
-    for (auto const obj: objects)
-    {
-        std::string ply_color = obj["ply_color"];
-        ply_color.erase(0, 1);
-        sf.obj_details_map[ply_color] = obj;
+        // Fill map with the colors
+        for (auto const obj: objects)
+        {
+            std::string ply_color = obj["ply_color"];
+            ply_color.erase(0, 1);
+            sf.obj_details_map[ply_color] = obj;
+        }
+
+        reference_map[sf.scan_id] = sf;
+
+        // For each reference scan we need to find all the query scans and populare the queryscan map
+        for (auto const &jsonBlock : refQueryMapData["scans"])
+        {
+            if (jsonBlock["reference"] == sf.scan_id)
+            {
+                std::vector<json> query_scans = jsonBlock["scans"];
+                for (auto const &queryScanBlock : query_scans)
+                {
+                    SpectralFeaturesSparse query_sf;
+                    query_sf.scan_id = queryScanBlock["reference"].get<std::string>();
+                    query_sf.ply_file = dataset_dir + "/" + query_sf.scan_id + "/" + ply_file;
+
+                    // Get all the objects associated with the scan
+                    std::vector<json> objects;
+                    for (auto obj : objectData["scans"])
+                    {
+                        if( obj["scan"] == query_sf.scan_id )
+                        {
+                            objects = obj["objects"];
+                            break;
+                        }
+                    }
+
+                    for (auto const obj: objects)
+                    {
+                        std::string ply_color = obj["ply_color"];
+                        ply_color.erase(0, 1);
+                        query_sf.obj_details_map[ply_color] = obj;
+                    }
+
+                    query_sf.referece_id = sf.scan_id;
+                    query_map[query_sf.scan_id] = query_sf;
+                }
+            }
+        }
     }
 }
 
@@ -507,7 +565,7 @@ void VisualizeHistograms(T &ref_sf, T &query_sf)
 
             double bin_width = (max - min) / 25;
 
-            std::string label = kv.second["label"].dump();
+            std::string label = kv.second["label"].dump() + " : " + kv.first;
             subplot(6,6,row_idx * 6 + col_idx);
             auto h1 = hist(ref);
             h1->face_color("r");
@@ -661,9 +719,78 @@ void MSE(SpectralFeaturesSparse &ref_sf, SpectralFeaturesSparse &query_sf)
     }
 }
 
-void RMSE(SpectralFeaturesSparse &ref_sf, SpectralFeaturesSparse &query_sf)
+void SaveEigenvalues(std::unordered_map<std::string, SpectralFeaturesSparse> &reference_map, std::unordered_map<std::string, SpectralFeaturesSparse> &query_map)
 {
+    json j;
+    std::ofstream o("/home/nate/Development/SGPR/data/eigenvalues.json");
 
+    // {
+    //   reference_scans: [
+    //     scan_id:
+    //     ply_color:
+    //     {
+    //       label:
+    //       eigenvalues:
+    //     }
+    //   ],
+    //   query_scans: [
+    //     scan_id:
+    //     reference_scan_id:
+    //     ply_color:
+    //     {
+    //       label:
+    //       eigenvalues:
+    //     }
+    //   ],
+    // }
+
+    // Create reference_scans field
+    std::vector<json> reference_scans;
+    for ( auto &kv : reference_map )
+    {
+        std::string scan_id = kv.first;
+        json reference_scan;
+        reference_scan["scan_id"] = scan_id;
+        for(auto &obj : kv.second.obj_details_map)
+        {
+            reference_scan[obj.first]["label"] = obj.second["label"];
+            reference_scan[obj.first]["eigenvalues"] = kv.second.eigval_map[obj.first];
+        }
+        reference_scans.push_back(reference_scan);
+    }
+
+    j["reference_scans"] = reference_scans;
+
+    // Create query_scans field
+    std::vector<json> query_scans;
+    for ( auto &kv : query_map )
+    {
+        std::string scan_id = kv.first;
+        json query_scan;
+        query_scan["scan_id"] = scan_id;
+        query_scan["reference_scan_id"] = kv.second.referece_id;
+        for(auto &obj : kv.second.obj_details_map)
+        {
+            query_scan[obj.first]["label"] = obj.second["label"];
+            query_scan[obj.first]["eigenvalues"] = kv.second.eigval_map[obj.first];
+        }
+        query_scans.push_back(query_scan);
+    }
+
+    j["query_scans"] = query_scans;
+
+    //for ( auto const &kv : ref.obj_details_map )
+    //{
+    //    std::string key = kv.first;
+    //    if (query.eigval_map.find(key) != query.eigval_map.end())
+    //    {
+    //        j[key]["label"] = kv.second["label"];
+    //        j[key]["reference"] = ref.eigval_map[key];
+    //        j[key]["query"] = query.eigval_map[key];
+    //    }
+    //}
+
+    o << std::setw(4) << j << std::endl;
 }
 
 void NearestNeighbor(SpectralFeaturesSparse &ref, SpectralFeaturesSparse &query)
@@ -677,46 +804,56 @@ void NearestNeighbor(SpectralFeaturesSparse &ref, SpectralFeaturesSparse &query)
     ComputeEigensSparse(ref);
     ComputeEigensSparse(query);
 
-    PruneEigenvalues(ref, query);
+    //PruneEigenvalues(ref, query);
 
-    MSE(ref, query);
+    //MSE(ref, query);
     //RMSE(ref, query);
 
-    VisualizeHistograms(ref, query);
+    //SaveEigenvalues(ref, query);
+
+    //VisualizeHistograms(ref, query);
 }
 
 int main()
 {
-    //SpectralFeaturesDense ref_sf;
-    //SpectralFeaturesDense query_sf;
-    SpectralFeaturesSparse ref_sf;
-    SpectralFeaturesSparse query_sf;
+    //std::string testConfig= "/home/nate/Development/SGPR/config/test.json";
 
-    std::string ref_scan = "/home/nate/Development/3RScan/data/3RScan/4acaebcc-6c10-2a2a-858b-29c7e4fb410d/labels.instances.annotated.v2.ply";
-    std::string query_scan = "/home/nate/Development/3RScan/data/3RScan/754e884c-ea24-2175-8b34-cead19d4198d/labels.instances.annotated.v2.ply";
+    //std::ifstream testFile(testConfig);
 
-    std::string ref_scan_id = "4acaebcc-6c10-2a2a-858b-29c7e4fb410d";
-    std::string query_scan_id = "754e884c-ea24-2175-8b34-cead19d4198d";
+    //json testData = json::parse(testFile);
 
-    ref_sf.ply_file = ref_scan;
-    ref_sf.scan_id = ref_scan_id;
+    // Key of the reference_map and query_map is their corresponding scan id's
+    std::unordered_map<std::string, SpectralFeaturesSparse> reference_map;
+    std::unordered_map<std::string, SpectralFeaturesSparse> query_map;
 
-    query_sf.ply_file = query_scan;
-    query_sf.scan_id = query_scan_id;
+    ParseConfig(reference_map, query_map);
 
-    ParseConfig(ref_sf);
-    ParseConfig(query_sf);
+    for(auto &kv : reference_map)
+    {
+        PopulateSemanticEigenMap(kv.second);
+    }
 
-    PopulateSemanticEigenMap(ref_sf);
-    PopulateSemanticEigenMap(query_sf);
+    for(auto &kv : query_map)
+    {
+        PopulateSemanticEigenMap(kv.second);
+    }
 
-    // TODO
-    // nearest neightbor laplacian
-    // adaptive threshold laplacian
-    // Probability transition laplacian
+    for(auto &ref_kv : reference_map)
+    {
+        for(auto &query_kv : query_map)
+        {
+            if (query_kv.second.referece_id != ref_kv.first) continue;
+            NearestNeighbor(ref_kv.second, query_kv.second);
+        }
+    }
 
-    //FullyConnected(ref_sf, query_sf);
-    NearestNeighbor(ref_sf, query_sf);
+    SaveEigenvalues(reference_map, query_map);
+
+    //PopulateSemanticEigenMap(ref_sf);
+    //PopulateSemanticEigenMap(query_sf);
+
+    // TODO rename this to adaptive minimum graph
+    //NearestNeighbor(ref_sf, query_sf);
 
     return 1;
 }
