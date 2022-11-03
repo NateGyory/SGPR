@@ -1,0 +1,461 @@
+!!!!!!
+Query scan ID: 4e858c91-fd93-2cb4-85e4-02c198efe788
+Number of objects in the scene: 16
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 6
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 6
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 4e858c91-fd93-2cb4-85e4-02c198efe788 Does 4e858c8f-fd93-2cb4-8676-36cea7ef23cc = 4e858c8f-fd93-2cb4-8676-36cea7ef23cc?
+True
+!!!!!!
+Query scan ID: 4e858c89-fd93-2cb4-8459-7542184fd2ad
+Number of objects in the scene: 32
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+object
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 9
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 9
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 2
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+wall
+lamp
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 1
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+For: 4e858c89-fd93-2cb4-8459-7542184fd2ad Does 4e858c81-fd93-2cb4-8469-d9226116b5de = 4e858c81-fd93-2cb4-8469-d9226116b5de?
+True
+!!!!!!
+Query scan ID: 4d3d82a0-8cf4-2e04-800f-97deb20e860b
+Number of objects in the scene: 26
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 3
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+pillow
+lamp
+lamp
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 7
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 7
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 4d3d82a0-8cf4-2e04-800f-97deb20e860b Does 4d3d829e-8cf4-2e04-8318-b76f02d91c93 = 4d3d829e-8cf4-2e04-8318-b76f02d91c93?
+True
+!!!!!!
+Query scan ID: 8eabc403-5af7-2f32-84aa-ecb06ef26b8b
+Number of objects in the scene: 31
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 3
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+ceiling
+wall
+wall
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 6
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 6
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 8eabc403-5af7-2f32-84aa-ecb06ef26b8b Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 0f2f2719-b736-2f71-8e3e-46490f5fe5fe
+Number of objects in the scene: 30
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+floor
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+ceiling
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 3
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 0f2f2719-b736-2f71-8e3e-46490f5fe5fe Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 8eabc401-5af7-2f32-85fe-77e22d8d97f8
+Number of objects in the scene: 31
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+ceiling
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 8
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 8
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 8eabc401-5af7-2f32-85fe-77e22d8d97f8 Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 4e858c83-fd93-2cb4-864f-f127e87e0783
+Number of objects in the scene: 33
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 5
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+pillow
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 4e858c83-fd93-2cb4-864f-f127e87e0783 Does 4e858c81-fd93-2cb4-8469-d9226116b5de = 4e858c81-fd93-2cb4-8469-d9226116b5de?
+True
+!!!!!!
+Query scan ID: 754e884c-ea24-2175-8b34-cead19d4198d
+Number of objects in the scene: 31
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 8
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 8
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 754e884c-ea24-2175-8b34-cead19d4198d Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 4e858c85-fd93-2cb4-87e4-8d8ff1f31652
+Number of objects in the scene: 33
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+wall
+wall
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 8
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 8
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 3
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+wall
+lamp
+lamp
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 4e858c85-fd93-2cb4-87e4-8d8ff1f31652 Does 4e858c81-fd93-2cb4-8469-d9226116b5de = 4e858c81-fd93-2cb4-8469-d9226116b5de?
+True
+!!!!!!
+Query scan ID: 4acaebce-6c10-2a2a-852f-98c6902bcc88
+Number of objects in the scene: 31
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 3
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+floor
+wall
+wall
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 2
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+ceiling
+wall
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 11
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 11
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 4acaebce-6c10-2a2a-852f-98c6902bcc88 Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 531cfefe-0021-28f6-8c6c-35ae26d2158f
+Number of objects in the scene: 32
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 3
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+ceiling
+floor
+wall
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 10
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 10
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 531cfefe-0021-28f6-8c6c-35ae26d2158f Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 50e7c0b1-0730-2a5f-8471-b240fa51b1d7
+Number of objects in the scene: 30
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 2
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+wall
+wall
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+wall
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 4
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 4
+Labels which were correctly matched but from a wrong scene:
+
+---------------------------------------
+For: 50e7c0b1-0730-2a5f-8471-b240fa51b1d7 Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+Correct Predictions: 12
+Total Predictions: 12
+Accuracy: 1.0

@@ -722,7 +722,7 @@ void MSE(SpectralFeaturesSparse &ref_sf, SpectralFeaturesSparse &query_sf)
 void SaveEigenvalues(std::unordered_map<std::string, SpectralFeaturesSparse> &reference_map, std::unordered_map<std::string, SpectralFeaturesSparse> &query_map)
 {
     json j;
-    std::ofstream o("/home/nate/Development/SGPR/data/eigenvalues.json");
+    std::ofstream o("/home/nate/Development/SGPR/data/eigenvalues_1.json");
 
     // {
     //   reference_scans: [

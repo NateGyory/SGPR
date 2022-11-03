@@ -1,0 +1,607 @@
+!!!!!!
+Query scan ID: 4e858c91-fd93-2cb4-85e4-02c198efe788
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 4
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('bathtub', 'floor')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 2
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('sink', 'shelf')
+('wall', 'ceiling')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('ceiling', 'floor')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 1
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('object', 'plant')
+---------------------------------------
+For: 4e858c91-fd93-2cb4-85e4-02c198efe788 Does 4e858c8f-fd93-2cb4-8676-36cea7ef23cc = 4e858c8f-fd93-2cb4-8676-36cea7ef23cc?
+True
+!!!!!!
+Query scan ID: 4e858c89-fd93-2cb4-8459-7542184fd2ad
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('shelf', 'sink')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 4
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'floor')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('floor', 'ceiling')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 3
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('floor', 'wall')
+('floor', 'ceiling')
+---------------------------------------
+For: 4e858c89-fd93-2cb4-8459-7542184fd2ad Does 4e858c81-fd93-2cb4-8469-d9226116b5de = 4e858c81-fd93-2cb4-8469-d9226116b5de?
+True
+!!!!!!
+Query scan ID: 4d3d82a0-8cf4-2e04-800f-97deb20e860b
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'bathtub')
+('wall', 'floor')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 2
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+lamp
+Labels which were incorrectly matched:
+('ceiling', 'bed')
+('ceiling', 'wall')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 5
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 1
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('ceiling', 'wall')
+---------------------------------------
+For: 4d3d82a0-8cf4-2e04-800f-97deb20e860b Does 4d3d829e-8cf4-2e04-8318-b76f02d91c93 = 4d3d829e-8cf4-2e04-8318-b76f02d91c93?
+True
+!!!!!!
+Query scan ID: 8eabc403-5af7-2f32-84aa-ecb06ef26b8b
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('cushion', 'towel')
+('floor', 'wall')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 3
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+ceiling
+wall
+wall
+Labels which were incorrectly matched:
+
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 3
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('cushion', 'pillow')
+('floor', 'ceiling')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 3
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 3
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 6
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('ceiling', 'floor')
+('floor', 'wall')
+('wall', 'ceiling')
+---------------------------------------
+For: 8eabc403-5af7-2f32-84aa-ecb06ef26b8b Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 0f2f2719-b736-2f71-8e3e-46490f5fe5fe
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('beanbag', 'sink')
+('plant', 'toilet')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 3
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 4
+Labels which were correctly matched but from a wrong scene:
+floor
+Labels which were incorrectly matched:
+('wall', 'floor')
+('ceiling', 'floor')
+('wall', 'floor')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 4
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+ceiling
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('floor', 'ceiling')
+('sofa', 'wall')
+('wall', 'ceiling')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 3
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 5
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 8
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('ceiling', 'wall')
+('floor', 'wall')
+('floor', 'ceiling')
+('wall', 'ceiling')
+---------------------------------------
+For: 0f2f2719-b736-2f71-8e3e-46490f5fe5fe Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 8eabc401-5af7-2f32-85fe-77e22d8d97f8
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('shades', 'wall')
+('floor', 'wall')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 5
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 6
+Labels which were correctly matched but from a wrong scene:
+ceiling
+Labels which were incorrectly matched:
+('wall', 'floor')
+('plant', 'chair')
+('floor', 'ceiling')
+('floor', 'ceiling')
+('wall', 'floor')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 2
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('wall', 'ceiling')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 4
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 4
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 8
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('ceiling', 'floor')
+('window', 'light')
+('cushion', 'beanbag')
+('wall', 'ceiling')
+---------------------------------------
+For: 8eabc401-5af7-2f32-85fe-77e22d8d97f8 Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 4e858c83-fd93-2cb4-864f-f127e87e0783
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 3
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 4
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('pillow', 'towel')
+('nightstand', 'door')
+('wall', 'toilet')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 4
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+pillow
+Labels which were incorrectly matched:
+('shelf', 'nightstand')
+('bed', 'wall')
+('floor', 'ceiling')
+('ceiling', 'lamp')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 4
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 4
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('bed', 'sofa')
+('floor', 'ceiling')
+('wall', 'sofa')
+('wall', 'sofa')
+---------------------------------------
+For: 4e858c83-fd93-2cb4-864f-f127e87e0783 Does 4e858c81-fd93-2cb4-8469-d9226116b5de = 4d3d829e-8cf4-2e04-8318-b76f02d91c93?
+False
+!!!!!!
+Query scan ID: 754e884c-ea24-2175-8b34-cead19d4198d
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('floor', 'wall')
+('windowsill', 'wall')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 3
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'floor')
+('windowsill', 'wall')
+('windowsill', 'ceiling')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 0
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('ceiling', 'wall')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 1
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 4
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('floor', 'wall')
+('wall', 'ceiling')
+('windowsill', 'wall')
+('wall', 'windowsill')
+---------------------------------------
+For: 754e884c-ea24-2175-8b34-cead19d4198d Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 4e858c85-fd93-2cb4-87e4-8d8ff1f31652
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 4
+Labels which were correctly matched but from a wrong scene:
+wall
+wall
+Labels which were incorrectly matched:
+('item', 'wall')
+('item', 'wall')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 4
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 6
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 10
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('cabinet', 'desk')
+('wall', 'ceiling')
+('trash can', 'item')
+('item', 'wall')
+('item', 'ceiling')
+('item', 'ceiling')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 2
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('floor', 'ceiling')
+('item', 'wall')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 3
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 3
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('floor', 'ceiling')
+('item', 'floor')
+('desk', 'window')
+---------------------------------------
+For: 4e858c85-fd93-2cb4-87e4-8d8ff1f31652 Does 4e858c81-fd93-2cb4-8469-d9226116b5de = 4e858c81-fd93-2cb4-8469-d9226116b5de?
+True
+!!!!!!
+Query scan ID: 4acaebce-6c10-2a2a-852f-98c6902bcc88
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 2
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('window', 'bathtub')
+('window', 'floor')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 1
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 4
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+floor
+Labels which were incorrectly matched:
+('wall', 'floor')
+('ceiling', 'floor')
+('wall', 'floor')
+('windowsill', 'wall')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 2
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 3
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 5
+Labels which were correctly matched but from a wrong scene:
+ceiling
+wall
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('floor', 'ceiling')
+('wall', 'ceiling')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 5
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 3
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 8
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('floor', 'ceiling')
+('wall', 'ceiling')
+('wall', 'sofa')
+---------------------------------------
+For: 4acaebce-6c10-2a2a-852f-98c6902bcc88 Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4acaebcc-6c10-2a2a-858b-29c7e4fb410d?
+True
+!!!!!!
+Query scan ID: 531cfefe-0021-28f6-8c6c-35ae26d2158f
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('cushion', 'toilet')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 2
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 4
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 6
+Labels which were correctly matched but from a wrong scene:
+ceiling
+floor
+Labels which were incorrectly matched:
+('wall', 'floor')
+('shades', 'wall')
+('wall', 'floor')
+('windowsill', 'cabinet')
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 5
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 6
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('floor', 'wall')
+('floor', 'ceiling')
+('heater', 'door')
+('wall', 'ceiling')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 1
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 5
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 6
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'ceiling')
+('ceiling', 'floor')
+('floor', 'wall')
+('floor', 'ceiling')
+('wall', 'ceiling')
+---------------------------------------
+For: 531cfefe-0021-28f6-8c6c-35ae26d2158f Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4e858c81-fd93-2cb4-8469-d9226116b5de?
+False
+!!!!!!
+Query scan ID: 50e7c0b1-0730-2a5f-8471-b240fa51b1d7
+---------------------------------------
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total objects in scene: 17
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: correct matches: 0
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: incorrect matches: 1
+4e858c8f-fd93-2cb4-8676-36cea7ef23cc: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('cushion', 'towel')
+---------------------------------------
+---------------------------------------
+4e858c81-fd93-2cb4-8469-d9226116b5de: total objects in scene: 34
+4e858c81-fd93-2cb4-8469-d9226116b5de: correct matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: incorrect matches: 0
+4e858c81-fd93-2cb4-8469-d9226116b5de: total matches: 0
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+
+---------------------------------------
+---------------------------------------
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total objects in scene: 26
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: correct matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: incorrect matches: 1
+4d3d829e-8cf4-2e04-8318-b76f02d91c93: total matches: 2
+Labels which were correctly matched but from a wrong scene:
+wall
+Labels which were incorrectly matched:
+('shades', 'wall')
+---------------------------------------
+---------------------------------------
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total objects in scene: 32
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: correct matches: 0
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: incorrect matches: 1
+4acaebcc-6c10-2a2a-858b-29c7e4fb410d: total matches: 1
+Labels which were correctly matched but from a wrong scene:
+
+Labels which were incorrectly matched:
+('wall', 'sofa')
+---------------------------------------
+For: 50e7c0b1-0730-2a5f-8471-b240fa51b1d7 Does 4acaebcc-6c10-2a2a-858b-29c7e4fb410d = 4d3d829e-8cf4-2e04-8318-b76f02d91c93?
+False
+Correct Predictions: 9
+Total Predictions: 12
+Accuracy: 0.75
