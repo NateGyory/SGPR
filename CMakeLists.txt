@@ -16,8 +16,15 @@ find_package(Matplot++ REQUIRED)
 
 #add_definitions(${PCL_DEFINITIONS})
 
-file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "src/main.cpp")
+#file(GLOB_RECURSE PROOFS_SRCS CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB_RECURSE PROOFS_SRCS CONFIGURE_DEPENDS "src/spectralProof.cpp")
 
-add_executable(SGPR ${SRCS})
-target_link_libraries(SGPR PRIVATE ${PCL_LIBRARIES} ${ARMADILLO_LIBRARIES} nlohmann_json::nlohmann_json Matplot++::matplot)
-target_include_directories(SGPR PRIVATE ${PCL_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${ARMADILLO_INCLUDE_DIRS})
+#add_executable(SGPR ${SRCS})
+#target_link_libraries(SGPR PRIVATE ${PCL_LIBRARIES} ${ARMADILLO_LIBRARIES} nlohmann_json::nlohmann_json Matplot++::matplot)
+#target_include_directories(SGPR PRIVATE ${PCL_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${ARMADILLO_INCLUDE_DIRS})
+
+
+add_executable(proof ${PROOFS_SRCS})
+target_link_libraries(proof PRIVATE ${PCL_LIBRARIES} ${ARMADILLO_LIBRARIES} Matplot++::matplot)
+target_include_directories(proof PRIVATE ${PCL_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${ARMADILLO_INCLUDE_DIRS})
