@@ -737,6 +737,7 @@ void SaveEigenvalues(std::unordered_map<std::string, SpectralFeaturesSparse> &re
     //     ply_color:
     //     {
     //       label:
+    //       global_id:
     //       eigenvalues:
     //     }
     //   ],
@@ -746,6 +747,7 @@ void SaveEigenvalues(std::unordered_map<std::string, SpectralFeaturesSparse> &re
     //     ply_color:
     //     {
     //       label:
+    //       global_id:
     //       eigenvalues:
     //     }
     //   ],
@@ -761,6 +763,7 @@ void SaveEigenvalues(std::unordered_map<std::string, SpectralFeaturesSparse> &re
         for(auto &obj : kv.second.obj_details_map)
         {
             reference_scan[obj.first]["label"] = obj.second["label"];
+            reference_scan[obj.first]["global_id"] = obj.second["global_id"];
             reference_scan[obj.first]["eigenvalues"] = kv.second.eigval_map[obj.first];
         }
         reference_scans.push_back(reference_scan);
@@ -779,6 +782,7 @@ void SaveEigenvalues(std::unordered_map<std::string, SpectralFeaturesSparse> &re
         for(auto &obj : kv.second.obj_details_map)
         {
             query_scan[obj.first]["label"] = obj.second["label"];
+            query_scan[obj.first]["global_id"] = obj.second["global_id"];
             query_scan[obj.first]["eigenvalues"] = kv.second.eigval_map[obj.first];
         }
         query_scans.push_back(query_scan);
@@ -987,6 +991,7 @@ void SaveGFAFeatures(std::unordered_map<std::string, SpectralFeaturesSparse> &re
     //     ply_color:
     //     {
     //       label:
+    //       global_id:
     //       gfa_features:
     //     }
     //   ],
@@ -996,6 +1001,7 @@ void SaveGFAFeatures(std::unordered_map<std::string, SpectralFeaturesSparse> &re
     //     ply_color:
     //     {
     //       label:
+    //       global_id:
     //       gfa_features:
     //     }
     //   ],
@@ -1006,7 +1012,6 @@ void SaveGFAFeatures(std::unordered_map<std::string, SpectralFeaturesSparse> &re
     for( auto &kv : reference_map )
     {
         std::string scan_id = kv.first;
-        std::cout << "computing reference scan_id: " << scan_id << std::endl;
         json reference_scan;
         reference_scan["scan_id"] = scan_id;
         // Loop through the obj_cloud_map
@@ -1018,13 +1023,12 @@ void SaveGFAFeatures(std::unordered_map<std::string, SpectralFeaturesSparse> &re
             pcl::PointXYZRGB centroid;
             ComputeCentroid(cloud_kv.second, centroid);
 
-            std::cout << "ply_color: " << cloud_kv.first << std::endl;
-            std::cout << "label: " << kv.second.obj_details_map[cloud_kv.first]["label"] << std::endl;
             // Get the GFA features
             std::vector<double> eigenvalue_feature;
             GetGFAFeature(cloud_kv.second, eigenvalue_feature, centroid);
 
             reference_scan[cloud_kv.first]["label"] = kv.second.obj_details_map[cloud_kv.first]["label"];
+            reference_scan[cloud_kv.first]["global_id"] = kv.second.obj_details_map[cloud_kv.first]["global_id"];
             reference_scan[cloud_kv.first]["gfa_features"] = eigenvalue_feature;
         }
 
@@ -1042,7 +1046,6 @@ void SaveGFAFeatures(std::unordered_map<std::string, SpectralFeaturesSparse> &re
         query_scan["scan_id"] = scan_id;
         query_scan["reference_scan_id"] = kv.second.referece_id;
 
-        std::cout << "computing query scan_id: " << scan_id << std::endl;
         // Loop through the obj_cloud_map
         for ( auto &cloud_kv : kv.second.obj_cloud_map )
         {
@@ -1052,15 +1055,12 @@ void SaveGFAFeatures(std::unordered_map<std::string, SpectralFeaturesSparse> &re
             pcl::PointXYZRGB centroid;
             ComputeCentroid(cloud_kv.second, centroid);
 
-            std::cout << "ply_color: " << cloud_kv.first << std::endl;
-            std::cout << "label: " << kv.second.obj_details_map[cloud_kv.first]["label"] << std::endl;
-            std::cout << "Pointcloud size: " << cloud_kv.second->points.size() << std::endl;
-
             // Get the GFA features
             std::vector<double> eigenvalue_feature;
             GetGFAFeature(cloud_kv.second, eigenvalue_feature, centroid);
 
             query_scan[cloud_kv.first]["label"] = kv.second.obj_details_map[cloud_kv.first]["label"];
+            query_scan[cloud_kv.first]["global_id"] = kv.second.obj_details_map[cloud_kv.first]["global_id"];
             query_scan[cloud_kv.first]["gfa_features"] = eigenvalue_feature;
         }
 
