@@ -6,6 +6,7 @@
 #include <random>
 #include <cmath>
 
+#include <pcl/common/centroid.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/conversions.h>
 #include <pcl/filters/voxel_grid.h>
@@ -13,6 +14,7 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/random_sample.h>
+#include <pcl/common/common.h>
 
 #include <boost/format.hpp>
 
@@ -21,6 +23,11 @@
 #include <matplot/matplot.h>
 
 #include <armadillo>
+
+#include <cfenv>
+
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues>
 
 using namespace std::chrono_literals;
 using namespace matplot;
@@ -814,6 +821,256 @@ void NearestNeighbor(SpectralFeaturesSparse &ref, SpectralFeaturesSparse &query)
     //VisualizeHistograms(ref, query);
 }
 
+template<typename T>
+bool swap_if_gt(T& a, T& b) {
+  if (a > b) {
+    std::swap(a, b);
+    return true;
+  }
+  return false;
+}
+
+void GetGFAFeature(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud, std::vector<double> &eigenvalue_feature, pcl::PointXYZRGB &centroid) {
+
+  // Find the variances.
+  const size_t kNPoints = cloud->points.size();
+  pcl::PointCloud<pcl::PointXYZRGB> variances;
+  for (size_t i = 0u; i < kNPoints; ++i) {
+    variances.push_back(pcl::PointXYZRGB());
+    variances.points[i].x = cloud->points[i].x - centroid.x;
+    variances.points[i].y = cloud->points[i].y - centroid.y;
+    variances.points[i].z = cloud->points[i].z - centroid.z;
+  }
+
+  // Find the covariance matrix. Since it is symmetric, we only bother with the upper diagonal.
+  const std::vector<size_t> row_indices_to_access = {0,0,0,1,1,2};
+  const std::vector<size_t> col_indices_to_access = {0,1,2,1,2,2};
+  Eigen::Matrix3f covariance_matrix;
+  for (size_t i = 0u; i < row_indices_to_access.size(); ++i) {
+    const size_t row = row_indices_to_access[i];
+    const size_t col = col_indices_to_access[i];
+    double covariance = 0;
+    for (size_t k = 0u; k < kNPoints; ++k) {
+      covariance += variances.points[k].data[row] * variances.points[k].data[col];
+    }
+    covariance /= kNPoints;
+    covariance_matrix(row,col) = covariance;
+    covariance_matrix(col,row) = covariance;
+  }
+
+  // Compute eigenvalues of covariance matrix.
+  constexpr bool compute_eigenvectors = false;
+  Eigen::EigenSolver<Eigen::Matrix3f> eigenvalues_solver(covariance_matrix, compute_eigenvectors);
+  std::vector<float> eigenvalues(3, 0.0);
+  eigenvalues.at(0) = eigenvalues_solver.eigenvalues()[0].real();
+  eigenvalues.at(1) = eigenvalues_solver.eigenvalues()[1].real();
+  eigenvalues.at(2) = eigenvalues_solver.eigenvalues()[2].real();
+  if (eigenvalues_solver.eigenvalues()[0].imag() != 0.0 ||
+      eigenvalues_solver.eigenvalues()[1].imag() != 0.0 ||
+      eigenvalues_solver.eigenvalues()[2].imag() != 0.0 )
+  {
+      std::cout << "Eigenvalues should not have non-zero imaginary component." << std::endl;
+      exit(0);
+  }
+
+  // Sort eigenvalues from smallest to largest.
+  swap_if_gt(eigenvalues.at(0), eigenvalues.at(1));
+  swap_if_gt(eigenvalues.at(0), eigenvalues.at(2));
+  swap_if_gt(eigenvalues.at(1), eigenvalues.at(2));
+
+  // Normalize eigenvalues.
+  double sum_eigenvalues = eigenvalues.at(0) + eigenvalues.at(1) + eigenvalues.at(2);
+  double e1 = eigenvalues.at(0) / sum_eigenvalues;
+  double e2 = eigenvalues.at(1) / sum_eigenvalues;
+  double e3 = eigenvalues.at(2) / sum_eigenvalues;
+  if (e1 == e2 || e2 == e3 || e1 == e3)
+  {
+      std::cout << "Eigenvalues should not be equal." << std::endl;
+      exit(0);
+  }
+
+  // Store inside features.
+  const double sum_of_eigenvalues = e1 + e2 + e3;
+  constexpr double kOneThird = 1.0/3.0;
+  if(e1 == 0.0)
+  {
+      std::cout << "e1 should not be zero" << std::endl;
+      exit(0);
+  }
+  if(sum_eigenvalues == 0.0)
+  {
+      std::cout << "sum of eigenvalues should not be 0.0" << std::endl;
+      exit(0);
+  }
+
+  const double kNormalizationPercentile = 1.0;
+
+  const double kLinearityMax = 28890.9 * kNormalizationPercentile;
+  const double kPlanarityMax = 95919.2 * kNormalizationPercentile;
+  const double kScatteringMax = 124811 * kNormalizationPercentile;
+  const double kOmnivarianceMax = 0.278636 * kNormalizationPercentile;
+  const double kAnisotropyMax = 124810 * kNormalizationPercentile;
+  const double kEigenEntropyMax = 0.956129 * kNormalizationPercentile;
+  const double kChangeOfCurvatureMax = 0.99702 * kNormalizationPercentile;
+
+  const double kNPointsMax = 13200 * kNormalizationPercentile;
+
+  eigenvalue_feature.push_back((e1 - e2) / e1 / kLinearityMax);
+  eigenvalue_feature.push_back((e2 - e3) / e1 / kPlanarityMax);
+  eigenvalue_feature.push_back(e3 / e1 / kScatteringMax);
+  eigenvalue_feature.push_back(std::pow(e1 * e2 * e3, kOneThird) / kOmnivarianceMax);
+  eigenvalue_feature.push_back((e1 - e3) / e1 / kAnisotropyMax);
+  eigenvalue_feature.push_back((e1 * std::log(e1)) + (e2 * std::log(e2)) + (e3 * std::log(e3)) / kEigenEntropyMax);
+  eigenvalue_feature.push_back(e3 / sum_of_eigenvalues / kChangeOfCurvatureMax);
+
+  pcl::PointXYZRGB point_min, point_max;
+
+  pcl::getMinMax3D(*cloud, point_min, point_max);
+
+  double diff_x, diff_y, diff_z;
+
+  diff_x = point_max.x - point_min.x;
+  diff_y = point_max.y - point_min.y;
+  diff_z = point_max.z - point_min.z;
+
+  if (diff_z < diff_x && diff_z < diff_y) {
+    eigenvalue_feature.push_back(0.2);
+  } else {
+    eigenvalue_feature.push_back(0.0);
+  }
+
+  // eigenvalue_feature.push_back(FeatureValue("n_points", kNPoints / kNPointsMax));
+
+  if(eigenvalue_feature.size() != 8)
+  {
+      std::cout << "ERROR eigenvalue_feature vector not of size 8" << std::endl;
+      exit(0);
+  }
+
+  // Check that there were no overflows, underflows, or invalid float operations.
+  if (std::fetestexcept(FE_OVERFLOW)) {
+
+      std::cout << "Overflow error in eigenvalue feature computation." << std::endl;
+      exit(0);
+  } else if (std::fetestexcept(FE_UNDERFLOW)) {
+      std::cout << "Underflow error in eigenvalue feature computation." << std::endl;
+      exit(0);
+  } else if (std::fetestexcept(FE_INVALID)) {
+      std::cout << "Invalid Flag error in eigenvalue feature computation." << std::endl;
+      exit(0);
+  } else if (std::fetestexcept(FE_DIVBYZERO)) {
+      std::cout << "Divide by zero error in eigenvalue feature computation." << std::endl;;
+      exit(0);
+  }
+}
+
+void ComputeCentroid(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud, pcl::PointXYZRGB &centroid)
+{
+    pcl::CentroidPoint<pcl::PointXYZRGB> center;
+    for(int i = 0; i < cloud->size(); i++)
+    {
+        center.add(cloud->points[i]);
+    }
+
+    center.get(centroid);
+}
+
+void SaveGFAFeatures(std::unordered_map<std::string, SpectralFeaturesSparse> &reference_map, std::unordered_map<std::string, SpectralFeaturesSparse> &query_map)
+{
+
+    json j;
+    std::ofstream o("/home/nate/Development/SGPR/data/gfa_features.json");
+
+    // {
+    //   reference_scans: [
+    //     scan_id:
+    //     ply_color:
+    //     {
+    //       label:
+    //       gfa_features:
+    //     }
+    //   ],
+    //   query_scans: [
+    //     scan_id:
+    //     reference_scan_id:
+    //     ply_color:
+    //     {
+    //       label:
+    //       gfa_features:
+    //     }
+    //   ],
+    // }
+
+    // For each reference scan
+    std::vector<json> reference_scans;
+    for( auto &kv : reference_map )
+    {
+        std::string scan_id = kv.first;
+        std::cout << "computing reference scan_id: " << scan_id << std::endl;
+        json reference_scan;
+        reference_scan["scan_id"] = scan_id;
+        // Loop through the obj_cloud_map
+        for ( auto &cloud_kv : kv.second.obj_cloud_map )
+        {
+            if(cloud_kv.second->points.size() <= 3) continue;
+
+            // Get the centroid
+            pcl::PointXYZRGB centroid;
+            ComputeCentroid(cloud_kv.second, centroid);
+
+            std::cout << "ply_color: " << cloud_kv.first << std::endl;
+            std::cout << "label: " << kv.second.obj_details_map[cloud_kv.first]["label"] << std::endl;
+            // Get the GFA features
+            std::vector<double> eigenvalue_feature;
+            GetGFAFeature(cloud_kv.second, eigenvalue_feature, centroid);
+
+            reference_scan[cloud_kv.first]["label"] = kv.second.obj_details_map[cloud_kv.first]["label"];
+            reference_scan[cloud_kv.first]["gfa_features"] = eigenvalue_feature;
+        }
+
+        reference_scans.push_back(reference_scan);
+    }
+
+    j["reference_scans"] = reference_scans;
+
+    // For each query scan
+    std::vector<json> query_scans;
+    for( auto &kv : query_map )
+    {
+        std::string scan_id = kv.first;
+        json query_scan;
+        query_scan["scan_id"] = scan_id;
+        query_scan["reference_scan_id"] = kv.second.referece_id;
+
+        std::cout << "computing query scan_id: " << scan_id << std::endl;
+        // Loop through the obj_cloud_map
+        for ( auto &cloud_kv : kv.second.obj_cloud_map )
+        {
+            if(cloud_kv.second->points.size() <= 3) continue;
+
+            // Get the centroid
+            pcl::PointXYZRGB centroid;
+            ComputeCentroid(cloud_kv.second, centroid);
+
+            std::cout << "ply_color: " << cloud_kv.first << std::endl;
+            std::cout << "label: " << kv.second.obj_details_map[cloud_kv.first]["label"] << std::endl;
+            std::cout << "Pointcloud size: " << cloud_kv.second->points.size() << std::endl;
+
+            // Get the GFA features
+            std::vector<double> eigenvalue_feature;
+            GetGFAFeature(cloud_kv.second, eigenvalue_feature, centroid);
+
+            query_scan[cloud_kv.first]["label"] = kv.second.obj_details_map[cloud_kv.first]["label"];
+            query_scan[cloud_kv.first]["gfa_features"] = eigenvalue_feature;
+        }
+
+        query_scans.push_back(query_scan);
+    }
+
+    j["query_scans"] = query_scans;
+    o << std::setw(4) << j << std::endl;
+}
+
 int main()
 {
     //std::string testConfig= "/home/nate/Development/SGPR/config/test.json";
@@ -838,22 +1095,19 @@ int main()
         PopulateSemanticEigenMap(kv.second);
     }
 
-    for(auto &ref_kv : reference_map)
-    {
-        for(auto &query_kv : query_map)
-        {
-            if (query_kv.second.referece_id != ref_kv.first) continue;
-            NearestNeighbor(ref_kv.second, query_kv.second);
-        }
-    }
+    SaveGFAFeatures(reference_map, query_map);
 
-    SaveEigenvalues(reference_map, query_map);
+    // NOTE: This is for spectral eigenvalue methods
+    //for(auto &ref_kv : reference_map)
+    //{
+    //    for(auto &query_kv : query_map)
+    //    {
+    //        if (query_kv.second.referece_id != ref_kv.first) continue;
+    //        NearestNeighbor(ref_kv.second, query_kv.second);
+    //    }
+    //}
 
-    //PopulateSemanticEigenMap(ref_sf);
-    //PopulateSemanticEigenMap(query_sf);
-
-    // TODO rename this to adaptive minimum graph
-    //NearestNeighbor(ref_sf, query_sf);
+    //SaveEigenvalues(reference_map, query_map);
 
     return 1;
 }
