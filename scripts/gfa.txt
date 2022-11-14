@@ -1,0 +1,151 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 4e858c91-fd93-2cb4-85e4-02c198efe788
+Reference scan ID: 4e858c8f-fd93-2cb4-8676-36cea7ef23cc
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4e858c81-fd93-2cb4-8469-d9226116b5de
+correct matches: 0
+incorrect matches: 4
+total matches: 14
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 0
+incorrect matches: 2
+total matches: 6
+BAD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 4e858c89-fd93-2cb4-8459-7542184fd2ad
+Reference scan ID: 4e858c81-fd93-2cb4-8469-d9226116b5de
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4e858c81-fd93-2cb4-8469-d9226116b5de
+correct matches: 1
+incorrect matches: 0
+total matches: 27
+Reference scan prediction: 4d3d829e-8cf4-2e04-8318-b76f02d91c93
+correct matches: 1
+incorrect matches: 1
+total matches: 29
+BAD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 4d3d82a0-8cf4-2e04-800f-97deb20e860b
+Reference scan ID: 4d3d829e-8cf4-2e04-8318-b76f02d91c93
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4d3d829e-8cf4-2e04-8318-b76f02d91c93
+correct matches: 1
+incorrect matches: 0
+total matches: 3
+Reference scan prediction: 4e858c8f-fd93-2cb4-8676-36cea7ef23cc
+correct matches: 2
+incorrect matches: 0
+total matches: 9
+BAD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 8eabc403-5af7-2f32-84aa-ecb06ef26b8b
+Reference scan ID: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 2
+incorrect matches: 1
+total matches: 24
+Reference scan prediction: 4e858c81-fd93-2cb4-8469-d9226116b5de
+correct matches: 3
+incorrect matches: 1
+total matches: 27
+BAD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 0f2f2719-b736-2f71-8e3e-46490f5fe5fe
+Reference scan ID: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 1
+incorrect matches: 1
+total matches: 24
+GOOD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 8eabc401-5af7-2f32-85fe-77e22d8d97f8
+Reference scan ID: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 1
+incorrect matches: 0
+total matches: 13
+Reference scan prediction: 4e858c81-fd93-2cb4-8469-d9226116b5de
+correct matches: 1
+incorrect matches: 1
+total matches: 25
+BAD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 4e858c83-fd93-2cb4-864f-f127e87e0783
+Reference scan ID: 4e858c81-fd93-2cb4-8469-d9226116b5de
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4e858c81-fd93-2cb4-8469-d9226116b5de
+correct matches: 2
+incorrect matches: 1
+total matches: 28
+Reference scan prediction: 4d3d829e-8cf4-2e04-8318-b76f02d91c93
+correct matches: 2
+incorrect matches: 2
+total matches: 29
+BAD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 754e884c-ea24-2175-8b34-cead19d4198d
+Reference scan ID: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4e858c81-fd93-2cb4-8469-d9226116b5de
+correct matches: 0
+incorrect matches: 1
+total matches: 3
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 3
+incorrect matches: 1
+total matches: 24
+GOOD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 4e858c85-fd93-2cb4-87e4-8d8ff1f31652
+Reference scan ID: 4e858c81-fd93-2cb4-8469-d9226116b5de
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 0
+incorrect matches: 2
+total matches: 28
+BAD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 4acaebce-6c10-2a2a-852f-98c6902bcc88
+Reference scan ID: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 2
+incorrect matches: 2
+total matches: 29
+GOOD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 531cfefe-0021-28f6-8c6c-35ae26d2158f
+Reference scan ID: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+correct matches: 1
+incorrect matches: 0
+total matches: 2
+GOOD MATCH
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Query scan ID: 50e7c0b1-0730-2a5f-8471-b240fa51b1d7
+Reference scan ID: 4acaebcc-6c10-2a2a-858b-29c7e4fb410d
+-----------------------------------------
+Prediction Results
+Reference scan prediction: 4e858c8f-fd93-2cb4-8676-36cea7ef23cc
+correct matches: 0
+incorrect matches: 1
+total matches: 3
+BAD MATCH
+Correct Predictions: 4
+Total Predictions: 12
+Accuracy: 0.3333333333333333
